@@ -1,0 +1,53 @@
+use_osc "localhost", 4560
+
+live_loop :getbpm do
+  use_real_time
+  bpm = sync "/osc*/bpm"
+  set :globalBpm, bpm[0]
+  print(bpm)
+end
+
+live_loop :getatk1 do
+  use_real_time
+  atk1var = sync "/osc*/atk1"
+  set :atk1, atk1var[0]
+  print(:atk1)
+end
+
+live_loop :_snare do
+  use_real_time
+  sample :drum_snare_soft
+  sleep get(:globalBpm)
+end
+
+live_loop :_drum do
+  use_real_time
+  sample :drum_heavy_kick
+  sleep get(:globalBpm)
+end
+
+live_loop :_cymbal do
+  use_real_time
+  sample :drum_cymbal_closed
+  half = get(:globalBpm ) / 2
+  sleep half
+end
+
+live_loop :play_my_synth do
+  pause = get(:globalBpm) / 2
+  use_synth :prophet
+  play 50, attack: get(:atk1), release: 1
+  sleep(pause)
+  play 60, attack: get(:atk1), release: 1
+  sleep(pause)
+  play 70, attack: get(:atk1), release: 1
+  sleep(pause)
+  play 60, attack: get(:atk1), release: 1
+  sleep(pause)
+end
+
+#live_loop :_drum do
+#use_real_time
+#sample :elec_beep
+#sleep get(:globalBpm)
+#end
